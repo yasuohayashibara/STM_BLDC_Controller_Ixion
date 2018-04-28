@@ -457,8 +457,8 @@ int main(void)
     status.target_total_angle += status.target_angle * 10 * period;
     float error = deg100_2rad(property.CurrentPosition) - status.target_angle;
 //    float error = status.target_total_angle - dir * motor.getIntegratedAngleRad();
-    while(error > M_PI) error -= 2.0f * M_PI;
-    while(error < -M_PI) error += 2.0f * M_PI;
+//    while(error > M_PI) error -= 2.0f * M_PI;
+//    while(error < -M_PI) error += 2.0f * M_PI;
     status.err_i += error * 0.001f;
     status.err_i = max(min(status.err_i, 0.001f), -0.001f); 
     

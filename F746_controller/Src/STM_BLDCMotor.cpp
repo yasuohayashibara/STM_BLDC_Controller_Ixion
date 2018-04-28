@@ -9,7 +9,7 @@
 #define WHEEL_MOTOR_HOLE0_ANGLE2 2.618706f  // 15004 radx100
 #define WHEEL_MOTOR_HOLE0_ANGLE3 2.620362f  // 15013 radx100
 #define WHEEL_MOTOR_HOLE0_ANGLE4 2.573328f  // 14744 radx100
-#define REDUCTION_RATIO 32.0f
+#define REDUCTION_RATIO 87.0f
 
 #define HOLE_STATE0   0x05  // 101  ( 0deg - 60deg)
 #define HOLE_STATE1   0x04  // 100  ( 60deg - 120deg)
