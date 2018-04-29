@@ -24,19 +24,15 @@ public:
 
   float getMotorAngleRad() { return _motor_angle_rad; }
   
-  float getMotorAngleDeg() { return _motor_angle_rad * 180.0f / M_PI; }
-
   float getJointAngleRad() { return _joint_angle_rad; }
   
-  float getJointAngleDeg() { return _joint_angle_rad * 180.0f / M_PI; }
-
   int getError() { return _error; }
 
   void resetError() { _error = false; }
 
   float read() { return _motor_angle_rad; }
 
-  bool requestReadJointAngle();
+  void requestReadJointAngle() { _read_joint_flag = true; }
 
   bool sendMeasureAngleRequest();
   

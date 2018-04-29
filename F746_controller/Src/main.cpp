@@ -84,7 +84,7 @@ DMA_HandleTypeDef hdma_usart1_tx;
 /* Private variables ---------------------------------------------------------*/
 
 // version { year, month, day, no }
-char version[4] = { 18, 04, 26, 2 };
+char version[4] = { 18, 04, 29, 1 };
 
 #define GAIN 10.0
 #define GAIN_I 0.0
@@ -445,8 +445,9 @@ int main(void)
     }
 
     property.PreviousPosition = property.CurrentPosition;
-    short current_position = rad2deg100(motor.getWheelAngleRad());
-    
+    short current_position = rad2deg100(angle_sensor.getJointAngleRad());    
+    angle_sensor.requestReadJointAngle();
+		
     property.CurrentPosition = current_position;
     float period = 0.001f;
     float velocity = (dir * motor.getIntegratedAngleRad() - prev_integrated_angle) / period;
@@ -457,8 +458,6 @@ int main(void)
     status.target_total_angle += status.target_angle * 10 * period;
     float error = deg100_2rad(property.CurrentPosition) - status.target_angle;
 //    float error = status.target_total_angle - dir * motor.getIntegratedAngleRad();
-//    while(error > M_PI) error -= 2.0f * M_PI;
-//    while(error < -M_PI) error += 2.0f * M_PI;
     status.err_i += error * 0.001f;
     status.err_i = max(min(status.err_i, 0.001f), -0.001f); 
     
@@ -539,8 +538,6 @@ int main(void)
       p_rs485_main = NULL;
 			int hole = 0;
 			for(count = 0; ; count ++){
-        float angle = angle_sensor.getMotorAngleDeg();
-
         if (count % 200 == 0){
           float ratio = motor;
           float integrated_angle = dir * motor.getIntegratedAngleRad();
