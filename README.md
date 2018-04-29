@@ -1,4 +1,4 @@
-# # STM_BLDC_Controller
+# STM_BLDC_Controller_Ixion
 
 This BLDC Controller is developed for an original controller with STM F746.
 
