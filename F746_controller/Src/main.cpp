@@ -54,7 +54,7 @@
 #include "LED.h"
 #include "switch.h"
 #include "RS485.h"
-#include "AngleSensor.h"
+#include "DualAngleSensor.h"
 #include "PWM.h"
 #include "ADConv.h"
 #include "Parser.h"
@@ -296,7 +296,7 @@ int main(void)
   RS485 rs485(&huart1);
 
   p_rs485_main = &rs485;
-  AngleSensor angle_sensor(&hi2c2, (property.MCUTempLimit == 0) ? AngleSensor::AS5600 : AngleSensor::AS5048B);
+  DualAngleSensor angle_sensor(&hi2c2);
   float dir = (property.MotorTempLimit == 0) ? 1.0 : -1.0;
   HAL_TIM_Base_Start_IT(&htim3);
   HAL_TIM_Base_Start_IT(&htim4);
@@ -515,7 +515,7 @@ int main(void)
     } else {
       led4 = 0;
     }
-    if (angle_sensor.counter == prev_angle_sensor_counter){
+    if (angle_sensor.getMotorReadCounter() == prev_angle_sensor_counter){
       led4 = 1;
       HAL_Delay(10);  // min 10
       HAL_I2C_DeInit(&hi2c2);
@@ -527,11 +527,11 @@ int main(void)
       HAL_I2C_Init(&hi2c2);
       HAL_Delay(10);  // min 10
       angle_sensor.startMeasure();
-      prev_angle_sensor_counter = angle_sensor.counter;
+      prev_angle_sensor_counter = angle_sensor.getMotorReadCounter();
       HAL_Delay(10);  // min 10
       led4 = 0;
     } else {
-      prev_angle_sensor_counter = angle_sensor.counter;
+      prev_angle_sensor_counter = angle_sensor.getMotorReadCounter();
     }
 
     motor.setHoleStateInitAngle(deg100_2rad(property.CurrentLimit));
@@ -539,7 +539,7 @@ int main(void)
       p_rs485_main = NULL;
 			int hole = 0;
 			for(count = 0; ; count ++){
-        float angle = angle_sensor.getAngleDeg();
+        float angle = angle_sensor.getMotorAngleDeg();
 
         if (count % 200 == 0){
           float ratio = motor;
@@ -547,7 +547,7 @@ int main(void)
           float rot = (integrated_angle - prev_integrated_angle) / (2.0f * M_PI) / 0.2f * 32.0f;
           prev_integrated_angle = integrated_angle;
           char buf[100];
-          sprintf(buf, "%f %f %f %f %d %d\r\n", ratio, rot, motor.getHoleStateInitAngle(), angle_sensor.getAngleRad(), prev_hole_state, hole);
+          sprintf(buf, "%f %f %f %f %d %d\r\n", ratio, rot, motor.getHoleStateInitAngle(), angle_sensor.getMotorAngleRad(), prev_hole_state, hole);
           int c = rs485.getc();
           if (c == 'a' && motor <  0.5f) motor = motor + 0.1f;
           if (c == 'z' && motor > -0.5f) motor = motor - 0.1f;

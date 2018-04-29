@@ -4,7 +4,7 @@
 #define STM_BLDCMOTOR_H
 
 #include "PWM.h"
-#include "AngleSensor.h"
+#include "DualAngleSensor.h"
 #include "Output.h"
 
 /** Class to control a motor on any pin, without using pwm pin
@@ -32,7 +32,7 @@ public:
       *
       * @param Pin Pin on mbed to connect PWM device to
      */
-    STM_BLDCMotor(TIM_HandleTypeDef *htim, AngleSensor *as);
+    STM_BLDCMotor(TIM_HandleTypeDef *htim, DualAngleSensor *as);
 
     void servoOn(void);
 
@@ -105,7 +105,7 @@ private:
     float _prev_angle;
     float _velocity;
 
-    AngleSensor *_angle_sensor;
+    DualAngleSensor *_angle_sensor;
 
     static int switching_table[6][3];
     void drive(int u, int v, int w);

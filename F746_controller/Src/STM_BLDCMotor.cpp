@@ -38,7 +38,7 @@ int STM_BLDCMotor::switching_table[6] [3] = {
     { -1, 0, 1 }, // STATE6
 };
 
-STM_BLDCMotor::STM_BLDCMotor(TIM_HandleTypeDef *htim, AngleSensor *angle_sensor) :
+STM_BLDCMotor::STM_BLDCMotor(TIM_HandleTypeDef *htim, DualAngleSensor *angle_sensor) :
   _htim(htim),
   _uh(_htim, TIM_CHANNEL_1), _ul(L1_GPIO_Port, L1_Pin),
   _vh(_htim, TIM_CHANNEL_2), _vl(L2_GPIO_Port, L2_Pin),
@@ -93,12 +93,12 @@ float angle_diff = 0;
 bool STM_BLDCMotor::update()
 {
   const float angle_width = 2.0f * M_PI / 42.0f;
-  if (prev_angle_sensor_counter != _angle_sensor->counter){
-    _angle = _hole_state0_angle + angle_width + 2.0f*M_PI - _angle_sensor->getAngleRad();
+  if (prev_angle_sensor_counter != _angle_sensor->getMotorReadCounter()){
+    _angle = _hole_state0_angle + angle_width + 2.0f*M_PI - _angle_sensor->getMotorAngleRad();
   } else {
     _angle += _velocity / 20000.0f;
   }
-  prev_angle_sensor_counter = _angle_sensor->counter;
+  prev_angle_sensor_counter = _angle_sensor->getMotorReadCounter();
   angle_diff = maxPI(_angle - _prev_angle);
   _velocity = (1.0f - 0.0005f) * _velocity + 0.0005f * angle_diff * 20000.0f;
   _prev_angle = _angle;
