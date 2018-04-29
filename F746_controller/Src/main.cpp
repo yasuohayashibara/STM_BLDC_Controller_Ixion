@@ -436,8 +436,7 @@ int main(void)
 						}
           }
           if (data == B3M_OPTIONS_RUN_HOLD) status.control_mode = B3M_OPTIONS_RUN_HOLD;
-//          status.initial_angle = status.target_angle = angle_sensor.getAngleRad();
-          status.initial_angle = status.target_angle = 0;
+          status.initial_angle = status.target_angle = angle_sensor.getJointAngleRad();
           if (angle_sensor.getError()) break;
           property.DesiredPosition = rad2deg100(status.target_angle);
           break;
@@ -445,7 +444,7 @@ int main(void)
     }
 
     property.PreviousPosition = property.CurrentPosition;
-    short current_position = rad2deg100(angle_sensor.getJointAngleRad());    
+    short current_position = rad2deg100(angle_sensor.getJointAngleRad());
     angle_sensor.requestReadJointAngle();
 		
     property.CurrentPosition = current_position;
