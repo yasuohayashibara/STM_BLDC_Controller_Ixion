@@ -4,11 +4,6 @@
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
-#define TEST_MOTOR_HOLE0_ANGLE 3.038024f  // 17406 radx100
-#define WHEEL_MOTOR_HOLE0_ANGLE1 2.804288f  // 16067 radx100
-#define WHEEL_MOTOR_HOLE0_ANGLE2 2.618706f  // 15004 radx100
-#define WHEEL_MOTOR_HOLE0_ANGLE3 2.620362f  // 15013 radx100
-#define WHEEL_MOTOR_HOLE0_ANGLE4 2.573328f  // 14744 radx100
 #define REDUCTION_RATIO 87.0f
 
 #define HOLE_STATE0   0x05  // 101  ( 0deg - 60deg)
@@ -44,7 +39,7 @@ STM_BLDCMotor::STM_BLDCMotor(TIM_HandleTypeDef *htim, DualAngleSensor *angle_sen
   _vh(_htim, TIM_CHANNEL_2), _vl(L2_GPIO_Port, L2_Pin),
   _wh(_htim, TIM_CHANNEL_3), _wl(L3_GPIO_Port, L3_Pin),
   _value(0.0f), _max_ratio(0.5f), _enable(false), _fix_hole(false),
-  _hole_state_no(0), _hole_state0_angle(TEST_MOTOR_HOLE0_ANGLE),
+  _hole_state_no(0), _hole_state0_angle(0),
   _angle(0), _integral_angle(0), _wheel_angle(0), _prev_angle(0), _velocity(0),
   _angle_sensor(angle_sensor)
 {
@@ -100,13 +95,15 @@ bool STM_BLDCMotor::update()
   }
   prev_angle_sensor_counter = _angle_sensor->getMotorReadCounter();
   angle_diff = maxPI(_angle - _prev_angle);
-  _velocity = (1.0f - 0.0005f) * _velocity + 0.0005f * angle_diff * 20000.0f;
+  _velocity = (1.0f - 0.005f) * _velocity + 0.005f * angle_diff * 20000.0f;
+	// 0.0005f -> 0.005f (Time Constant 0.1 -> 0.01)
   _prev_angle = _angle;
   _integral_angle += (angle_diff / REDUCTION_RATIO);
   _wheel_angle += (angle_diff / REDUCTION_RATIO);
   _wheel_angle = maxPI(_wheel_angle);
 //  int hole_no = (int)((_angle + _velocity * 0.001f) / angle_width);
   int hole_no = (int)((_angle + _velocity * 0.00045f) / angle_width);
+//  int hole_no = (int)((_angle + _velocity * 0.0f) / angle_width);
   _hole_state_no = hole_no % 6;
 
   return true;
