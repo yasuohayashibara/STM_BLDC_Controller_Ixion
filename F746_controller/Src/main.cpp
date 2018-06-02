@@ -84,7 +84,7 @@ DMA_HandleTypeDef hdma_usart1_tx;
 /* Private variables ---------------------------------------------------------*/
 
 // version { year, month, day, no }
-char version[4] = { 18, 04, 29, 1 };
+char version[4] = { 18, 06, 02, 1 };
 
 #define GAIN 10.0
 #define GAIN_I 0.0
