@@ -395,9 +395,9 @@ int main(void)
         case B3M_SYSTEM_MOTOR_TEMP_LIMIT:
           property.MotorTempLimit = data;
           break;
-				case B3M_SYSTEM_CURRENT_LIMIT:
-					property.CurrentLimit = data;
-					break;
+        case B3M_SYSTEM_CURRENT_LIMIT:
+          property.CurrentLimit = data;
+          break;
         case B3M_SYSTEM_DEADBAND_WIDTH:
           property.DeadBandWidth = data;
           break;
@@ -411,6 +411,8 @@ int main(void)
           is_status_changed = true;
           break;
         case B3M_SERVO_DESIRED_TORQUE:
+          status.target_torque_Nm = (double)data / 1000.0f;
+          property.DesiredTorque = data;
           break;
         case B3M_CONTROL_KP0:
           property.Kp0 = data;
@@ -487,10 +489,12 @@ int main(void)
     } else {
         pwm += gain1 * error;
     }
-    const float ANGULAR_VEL_TO_TORQUE_COEF = 1.0f / 10.83f * 0.8f;
-    pwm -= ANGULAR_VEL_TO_TORQUE_COEF * velocity_rad;
+    const float ANGULAR_VEL_TO_PWM = 1.0f / 10.83f * 0.8f; // 80% avoid vibration
+    pwm -= ANGULAR_VEL_TO_PWM * velocity_rad;
     
     if (status.control_mode == B3M_OPTIONS_CONTROL_TORQUE) {
+      const float TORQUE_COEF_TO_PWM = 1.0f / 34.8f;
+      pwm -= TORQUE_COEF_TO_PWM * status.target_torque_Nm;
     }
     if (status.control_mode == B3M_OPTIONS_CONTROL_FFORWARD) {    // Direct PWM Control
       pwm = status.target_angle_rad / M_PI;
@@ -563,14 +567,14 @@ int main(void)
           if (c == 'q') motor.setHoleStateInitAngle(motor.getHoleStateInitAngle() + 0.001f);
           if (c == 'w') motor.setHoleStateInitAngle(motor.getHoleStateInitAngle() - 0.001f);
           if (c == 'h') {
-						hole ++;
-						if (hole >= 6) hole = 0;
-						motor.controlHole(hole,0.2);
-					} if (c == 'g') {
-						hole --;
-						if (hole < 0) hole = 5;
-						motor.controlHole(hole,0.2);
-					}
+            hole ++;
+            if (hole >= 6) hole = 0;
+            motor.controlHole(hole,0.2);
+          } if (c == 'g') {
+            hole --;
+            if (hole < 0) hole = 5;
+            motor.controlHole(hole,0.2);
+          }
           rs485.write(buf, strlen(buf));
         }
         if (count % 500 == 0) led4 = led4 ^ 1;
