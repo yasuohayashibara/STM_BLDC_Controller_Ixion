@@ -38,7 +38,7 @@ STM_BLDCMotor::STM_BLDCMotor(TIM_HandleTypeDef *htim, DualAngleSensor *angle_sen
   _uh(_htim, TIM_CHANNEL_1), _ul(L1_GPIO_Port, L1_Pin),
   _vh(_htim, TIM_CHANNEL_2), _vl(L2_GPIO_Port, L2_Pin),
   _wh(_htim, TIM_CHANNEL_3), _wl(L3_GPIO_Port, L3_Pin),
-  _value(0.0f), _max_ratio(0.5f), _enable(false), _fix_hole(false),
+  _value(0.0f), _max_ratio(1.0f), _enable(false), _fix_hole(false),
   _hole_state_no(0), _hole_state0_angle(0),
   _angle(0), _integral_angle(0), _wheel_angle(0), _prev_angle(0), _velocity(0),
   _angle_sensor(angle_sensor)
