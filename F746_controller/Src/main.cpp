@@ -84,7 +84,7 @@ DMA_HandleTypeDef hdma_usart1_tx;
 /* Private variables ---------------------------------------------------------*/
 
 // version { year, month, day, no }
-char version[4] = { 18, 06, 02, 1 };
+char version[4] = { 18, 6, 8, 1 };
 
 #define GAIN 10.0
 #define GAIN_I 0.0
@@ -503,7 +503,7 @@ int main(void)
     float val = max(min(pwm, max_torque), -max_torque);
     if (status.isWakeupMode) val *= 0.3f;
     
-    if (status.is_servo_on) motor = -val;
+    if (status.is_servo_on) motor = - val * dir;
     else motor = 0;
     property.PwmDuty = abs(motor) * 10000;
     
