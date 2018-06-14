@@ -176,7 +176,7 @@ typedef struct {
   byte LockDetectOutputRate;
   byte LockDetectTimePowerLimit;
   ushort InputVoltageMin;
-  ushort InputVoltageMax;
+  short InputVoltageMax;
   byte TorqueLimit;
   ushort DeadBandWidth;
   short dummy1;

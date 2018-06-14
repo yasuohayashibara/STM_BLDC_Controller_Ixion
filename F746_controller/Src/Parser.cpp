@@ -89,6 +89,9 @@ int Parser::setCommand(unsigned char *command_data, int command_data_len)
         int add = command_buf[length - 3];
         for(int i = 0; i < count; i ++){
           int index = 3 + i * len;
+          if ((command_buf[index] == property.InputVoltageMin) && (add == B3M_SERVO_DESIRED_POSITION)) {
+            property.InputVoltageMax = (short)((unsigned short)(command_buf[index+2] << 8) + (unsigned short)command_buf[index+1]);
+          }
           if (command_buf[index] != property.ID) continue;
           unsigned char *p = (unsigned char *)&command_buf[index + 1];
           for(int j = 0; j < (len - 1);){

@@ -84,7 +84,7 @@ DMA_HandleTypeDef hdma_usart1_tx;
 /* Private variables ---------------------------------------------------------*/
 
 // version { year, month, day, no }
-char version[4] = { 18, 6, 8, 1 };
+char version[4] = { 18, 6, 14, 1 };
 
 #define GAIN 10.0
 #define GAIN_I 0.0
@@ -250,6 +250,8 @@ void initialize(float angle)
   property.Ki0 = GAIN_I * 100;
   property.StaticFriction0 = PUNCH *100;
   property.FwVersion = (version[0] << 24) + (version[1] << 16) + (version[2] << 8) + version[3];
+  property.InputVoltageMin = 0; // Dummy (Reference Servo No. 0:Disable, 1~:Servo No.)
+  property.InputVoltageMax = rad2deg100(0); // Dummy (Reference Servo Angle)
 }
 
 /* USER CODE END 0 */
@@ -448,13 +450,16 @@ int main(void)
           if (angle_sensor.getError()) break;
           property.DesiredPosition = rad2deg100(status.target_angle_rad);
           break;
+        case B3M_SYSTEM_INPUT_VOLTAGE_MIN:
+          property.InputVoltageMin = data;	// Reference Servo No.
       }
     }
 
+    short current_reference_angle_position = property.InputVoltageMax;
     property.PreviousPosition = property.CurrentPosition;
-    short current_position = rad2deg100(angle_sensor.getJointAngleRad());
+    short current_position = rad2deg100(angle_sensor.getJointAngleRad()) + current_reference_angle_position;
     angle_sensor.requestReadJointAngle();
-		
+
     property.CurrentPosition = current_position;
     float period = 0.001f;
     float velocity_rad_raw = (dir * motor.getIntegratedAngleRad() - prev_integrated_angle) / period;
