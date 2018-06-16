@@ -468,8 +468,6 @@ int main(void)
     property.PreviousPosition = property.CurrentPosition;
     short current_position = rad2deg100(angle_sensor.getJointAngleRad()) + current_reference_angle_position;
     angle_sensor.requestReadJointAngle();
-    short joint_angle = current_position - property.PositionCenterOffset;
-    current_position = max(min(joint_angle, property.PositionMaxLimit), property.PositionMinLimit) + property.PositionCenterOffset;
 
     property.CurrentPosition = current_position;
     float period = 0.001f;
@@ -478,7 +476,8 @@ int main(void)
     prev_integrated_angle = dir * motor.getIntegratedAngleRad();
     property.CurrentVelocity = rad2deg100(velocity_rad / 10.0f);
     property.DesiredVelosity = rad2deg100(status.target_angle_rad);
-    
+    short joint_angle = rad2deg100(status.target_angle_rad) - property.PositionCenterOffset - current_reference_angle_position;
+    status.target_angle_rad = deg100_2rad(max(min(joint_angle, property.PositionMaxLimit), property.PositionMinLimit) + property.PositionCenterOffset + current_reference_angle_position);
     status.target_total_angle_rad += status.target_angle_rad * 10 * period;
     float error = deg100_2rad(property.CurrentPosition) - status.target_angle_rad;
 //    float error = status.target_total_angle - dir * motor.getIntegratedAngleRad();
