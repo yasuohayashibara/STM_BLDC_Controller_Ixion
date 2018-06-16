@@ -337,6 +337,7 @@ int main(void)
   float prev_integrated_angle = dir * motor.getIntegratedAngleRad();
   int prev_angle_sensor_counter = 0;
   float velocity_rad = 0.0f;
+	short prev_goal_angle_position = 0, start_angle_position = 0, step_goal_angle_position = 0;
   for(long count = 0; ; count ++)
   {
     
@@ -455,7 +456,15 @@ int main(void)
       }
     }
 
-    short current_reference_angle_position = property.InputVoltageMax;
+    short goal_angle_position = property.InputVoltageMax;  // temp
+    if (goal_angle_position != prev_goal_angle_position){
+      step_goal_angle_position = 0;
+      start_angle_position = prev_goal_angle_position;
+      prev_goal_angle_position = goal_angle_position;
+    }
+    short current_reference_angle_position = (float)(goal_angle_position - start_angle_position) * step_goal_angle_position / 10 + start_angle_position;
+    step_goal_angle_position ++;
+    if (step_goal_angle_position > 10) step_goal_angle_position = 10;
     property.PreviousPosition = property.CurrentPosition;
     short current_position = rad2deg100(angle_sensor.getJointAngleRad()) + current_reference_angle_position;
     angle_sensor.requestReadJointAngle();
