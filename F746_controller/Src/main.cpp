@@ -408,7 +408,7 @@ int main(void)
           property.TorqueLimit = data;
           break;
         case B3M_SERVO_DESIRED_POSITION:
-          data = max(min(data, property.PositionMaxLimit), property.PositionMinLimit);
+//        data = max(min(data, property.PositionMaxLimit), property.PositionMinLimit);
           status.target_angle_rad = deg100_2rad(data) + deg100_2rad(property.PositionCenterOffset);
           property.DesiredPosition = rad2deg100(status.target_angle_rad);
           is_status_changed = true;
@@ -468,6 +468,8 @@ int main(void)
     property.PreviousPosition = property.CurrentPosition;
     short current_position = rad2deg100(angle_sensor.getJointAngleRad()) + current_reference_angle_position;
     angle_sensor.requestReadJointAngle();
+    short joint_angle = current_position - property.PositionCenterOffset;
+    current_position = max(min(joint_angle, property.PositionMaxLimit), property.PositionMinLimit) + property.PositionCenterOffset;
 
     property.CurrentPosition = current_position;
     float period = 0.001f;
