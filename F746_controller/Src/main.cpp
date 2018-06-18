@@ -433,6 +433,18 @@ int main(void)
         case B3M_CONTROL_KP1:
           property.Kp1 = data;
           break;
+        case B3M_CONTROL_KD1:
+          property.Kp1 = data;
+          break;
+        case B3M_CONTROL_KI1:
+          property.Ki1 = data;
+          break;
+        case B3M_CONTROL_STATIC_FRICTION1:
+          property.StaticFriction1 = data;
+          break;
+        case B3M_CONTROL_CONTROL_LOW:
+          property.ControlType = data;
+          break;
         case B3M_SERVO_SERVO_MODE:
           status.is_servo_on = (data == B3M_OPTIONS_CONTROL_POSITION || data == B3M_OPTIONS_CONTROL_VELOCITY  || data == B3M_OPTIONS_CONTROL_TORQUE || data == B3M_OPTIONS_CONTROL_FFORWARD) ? true : false;
           led3 = (status.is_servo_on) ? 1 : 0;
@@ -484,11 +496,19 @@ int main(void)
     status.err_i += error * 0.001f;
     status.err_i = max(min(status.err_i, 0.001f), -0.001f); 
     
-    float gain = property.Kp0 / 100.0f;
-    float gain1 = property.Kp1 / 100.0f;
-    float gain_d = property.Kd0 / 100.0f;
-    float gain_i = property.Ki0 / 100.0f;
-    float punch = property.StaticFriction0 / 100.0f;
+    float gain, gain_d, gain_i, punch;
+    if (property.ControlType == 0) {
+			gain = property.Kp0 / 100.0f;
+			gain_d = property.Kd0 / 100.0f;
+			gain_i = property.Ki0 / 100.0f;
+			punch = property.StaticFriction0 / 100.0f;
+		} else if (property.ControlType == 1) {
+			gain = property.Kp1 / 100.0f;
+			gain_d = property.Kd1 / 100.0f;
+			gain_i = property.Ki1 / 100.0f;
+			punch = property.StaticFriction1 / 100.0f;
+		}
+
     float pwm = gain_i * status.err_i;
 //    pwm += gain_d * (status.target_angle_rad * 10 - velocity_rad);
     pwm += gain_d * velocity_rad;
@@ -502,7 +522,7 @@ int main(void)
         pwm += gain * error - punch;
       }
     } else {
-        pwm += gain1 * error;
+        pwm = 0;
     }
     const float ANGULAR_VEL_TO_PWM = 1.0f / 10.83f * 0.8f; // 80% avoid vibration
     pwm -= ANGULAR_VEL_TO_PWM * velocity_rad;
