@@ -414,7 +414,7 @@ int main(void)
           is_status_changed = true;
           break;
         case B3M_SERVO_DESIRED_TORQUE:
-          status.target_torque_Nm = (double)data / 1000.0f;
+          status.target_torque_Nm = (double)data / 100.0f;
           property.DesiredTorque = data;
           break;
         case B3M_CONTROL_KP0:
